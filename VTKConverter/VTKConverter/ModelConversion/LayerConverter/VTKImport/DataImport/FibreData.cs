@@ -1,7 +1,9 @@
-﻿using Kitware.VTK;
+﻿using System;
+using Kitware.VTK;
 
 namespace VTKConverter.DataImport
 {
+    [Serializable()]
     class FibreData : ModelData
     {
         private int numberOfPoints;

@@ -1,5 +1,5 @@
-﻿using System;
-using System.IO;
+﻿using System.IO;
+using Newtonsoft.Json;
 
 namespace VTKConverter
 {
@@ -7,13 +7,14 @@ namespace VTKConverter
     {
         private static readonly log4net.ILog Log = log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
 
+        public ModelInfo Info { get; private set; }
         private string outputRootDir;
 
         public void Convert(string inputRootDir, string outputFolder)
         {
             CreateOutputRoot(inputRootDir, outputFolder);
-            var singleModel = new SingleModel(inputRootDir);
-            ConvertSingleModel(singleModel);
+            ReadInfoFile(inputRootDir);
+            ConvertSingleModel();
         }
 
         private void CreateOutputRoot(string inputRootDir, string outputFolder)
@@ -23,35 +24,44 @@ namespace VTKConverter
             File.Copy(inputRootDir + @"\ModelInfo.json", outputRootDir + @"\ModelInfo.json", true);
         }
 
-        private void ConvertSingleModel(SingleModel singleModel)
+        private void ConvertSingleModel()
         {
-            Log.Info(singleModel.Info.Caption + " conversion started!");
-            foreach (ModelLayerInfo layerInfo in singleModel.Info.Layers)
+            var layerConverter = new LayerConverter();
+            Log.Info(Info.Caption + " conversion started!");
+            foreach (ModelLayerInfo layerInfo in Info.Layers)
             {
-                ConvertLayer(layerInfo);
+                layerConverter.Convert(layerInfo, outputRootDir);
             }
         }
 
-        private void ConvertLayer(ModelLayerInfo layerInfo)
+        protected void ReadInfoFile(string rootDirectory)
         {
-            string outputLayerDir = outputRootDir + @"\" + Path.GetFileName(layerInfo.Directory);
-            Directory.CreateDirectory(outputLayerDir);
-            var fileConverter = new VTKImporter();
-            string[] inputPaths = GetFilepaths(layerInfo.Directory);
-            foreach (string inputPath in inputPaths)
+            try
             {
-                fileConverter.Convert(inputPath, outputLayerDir, layerInfo.DataType);
+                ReadModelInfoJson(rootDirectory);
+            }
+            catch (FileNotFoundException ex)
+            {
+                throw Log.ThrowError("No ModelInfo.json found in root folder!", ex);
+            }
+            foreach (ModelLayerInfo layerInfo in Info.Layers)
+            {
+                layerInfo.Directory = rootDirectory + @"\" + layerInfo.Directory;
+            }
+
+            if (Info.Layers.Count == 0)
+            {
+                throw Log.ThrowError("No layers found in ModelInfo.json file", new InvalidDataException());
             }
         }
 
-        private string[] GetFilepaths(string rootDirectory)
+        private void ReadModelInfoJson(string rootDirectory)
         {
-            string[] filePaths = Directory.GetFiles(rootDirectory + @"\");
-            if (filePaths == null)
+            using (StreamReader r = new StreamReader(rootDirectory + @"\" + "ModelInfo.json"))
             {
-                throw Log.ThrowError("No files found in: " + rootDirectory, new FileNotFoundException());
+                string json = r.ReadToEnd();
+                Info = JsonConvert.DeserializeObject<ModelInfo>(json);
             }
-            return filePaths;
         }
     }
 }

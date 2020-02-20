@@ -1,7 +1,9 @@
-﻿using Kitware.VTK;
+﻿using System;
+using Kitware.VTK;
 
 namespace VTKConverter.DataImport
 {
+    [Serializable()]
     class FlowData : ModelData
     {
         private int numberOfVertices;

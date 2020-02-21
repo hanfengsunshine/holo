@@ -11,6 +11,12 @@ namespace ModelConversion
 
         public ModelInfo Info { get; private set; }
         private string outputRootDir;
+        private string exportType;
+
+        public ModelConverter(string exportType)
+        {
+            this.exportType = exportType;
+        }
 
         public void Convert(string inputRootDir, string outputFolder)
         {
@@ -28,7 +34,7 @@ namespace ModelConversion
 
         private void ConvertSingleModel()
         {
-            var layerConverter = new LayerConverter();
+            var layerConverter = new LayerConverter(exportType);
             Log.Info(Info.Caption + " conversion started!");
             foreach (ModelLayerInfo layerInfo in Info.Layers)
             {

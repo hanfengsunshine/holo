@@ -8,19 +8,19 @@ namespace ModelConversion.LayerConversion.LayerExport
 {
     using FrameImport;
 
-    static class TxtExporter
+    public class TxtExporter : IExporter
     {
-        public static void WriteFrameToFile(Frame frame, string outputRootDir)
+        public void WriteFrameToFile(Frame frame, string outputLayerDir)
         {
             string modelString = GetFrameAsString(frame);
-            string outputPath = outputRootDir + @"\" + frame.Filename + ".txt";
+            string outputPath = outputLayerDir + @"\" + frame.Filename + ".txt";
             using (StreamWriter file = new StreamWriter(outputPath, false, Encoding.ASCII, ushort.MaxValue))
             {
                 file.Write(modelString);
             }
         }
 
-        public static string GetFrameAsString(Frame frame)
+        private string GetFrameAsString(Frame frame)
         {
             StringBuilder modelString = new StringBuilder();
             modelString.Append("BOUNDS\n" + ConvertArrayToString(frame.BoundingBox) + "\n");
@@ -38,7 +38,7 @@ namespace ModelConversion.LayerConversion.LayerExport
             return modelString.ToString();
         }
 
-        private static string ConvertArrayToString(double[][] jaggedArray)
+        private string ConvertArrayToString(double[][] jaggedArray)
         {
             StringBuilder stringBuilder = new StringBuilder();
             for (int i = 0; i < jaggedArray.Length; i++)
@@ -51,12 +51,12 @@ namespace ModelConversion.LayerConversion.LayerExport
             return finalString;
         }
 
-        private static string ConvertArrayToString(int[] indicesArray)
+        private string ConvertArrayToString(int[] indicesArray)
         {
             string txtArray = string.Join(" ", indicesArray.Select(p => p.ToString()).ToArray());
             return txtArray;
         }
-        private static string ConvertArrayToString(double[] indicesArray)
+        private string ConvertArrayToString(double[] indicesArray)
         {
             string txtArray = string.Join(" ", indicesArray.Select(p => Math.Round(p, 5).ToString(CultureInfo.InvariantCulture)).ToArray());
             return txtArray;

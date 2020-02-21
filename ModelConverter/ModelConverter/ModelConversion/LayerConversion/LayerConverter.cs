@@ -12,6 +12,22 @@ namespace ModelConversion.LayerConversion
         private string fileExtension;
         private string outputLayerDir;
         private ModelLayerInfo layerInfo;
+        private IExporter layerExporter;
+
+        public LayerConverter(string exportType)
+        {
+            switch (exportType)
+            {
+                case "binary":
+                    layerExporter = new BinaryExporter();
+                        break;
+                case "txt":
+                    layerExporter = new TxtExporter();
+                    break;
+                default:
+                    throw Log.ThrowError("Export type not supported!", new IOException());
+            }
+        }
 
         public void Convert(ModelLayerInfo layerInfo, string outputRootDir)
         {
@@ -51,7 +67,7 @@ namespace ModelConversion.LayerConversion
         {
             Frame frame = frameImporter.Import(inputPath, outputLayerDir, layerInfo.DataType);
             string filename = Path.GetFileNameWithoutExtension(inputPath);
-            TxtExporter.WriteFrameToFile(frame, outputLayerDir);
+            layerExporter.WriteFrameToFile(frame, outputLayerDir);
             Log.Info(filename + " converted sucessfully.");
         }
 

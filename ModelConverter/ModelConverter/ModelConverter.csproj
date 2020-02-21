@@ -66,6 +66,7 @@
     <Compile Include="ModelConversion\LayerConversion\FrameImport\VTKImport\DataImport\AnatomyFrame.cs" />
     <Compile Include="ModelConversion\LayerConversion\FrameImport\VTKImport\DataImport\FibreFrame.cs" />
     <Compile Include="ModelConversion\LayerConversion\LayerExport\BinaryExporter.cs" />
+    <Compile Include="ModelConversion\LayerConversion\LayerExport\IExporter.cs" />
     <Compile Include="ModelConversion\LayerConversion\LayerExport\TxtExporter.cs" />
     <Compile Include="ModelConversion\ModelConverter.cs" />
     <Compile Include="ModelConversion\ModelInfoClasses.cs" />

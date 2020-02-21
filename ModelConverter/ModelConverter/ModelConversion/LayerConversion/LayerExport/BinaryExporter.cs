@@ -1,12 +1,20 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.IO;
+using System.Runtime.Serialization.Formatters.Binary;
+using ModelConversion.LayerConversion.FrameImport;
 
 namespace ModelConversion.LayerConversion.LayerExport
 {
-    class BinaryExporter
+    public class BinaryExporter : IExporter
     {
+        private static BinaryFormatter formatter = new BinaryFormatter();
+
+        public void WriteFrameToFile(Frame frame, string outputLayerDir)
+        {
+            string outputPath = outputLayerDir + @"\" + frame.Filename + ".bytes";
+            using (FileStream stream = new FileStream(outputPath, FileMode.Append, FileAccess.Write))
+            {
+                formatter.Serialize(stream, frame);
+            }
+        }
     }
 }

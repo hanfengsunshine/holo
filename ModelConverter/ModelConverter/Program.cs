@@ -18,7 +18,7 @@ namespace ModelConversion
             string inputRootDir = args[0];
             string outputFolder = args[1];
 
-            ModelConverter modelConverter = new ModelConverter();
+            ModelConverter modelConverter = new ModelConverter("binary");
             modelConverter.Convert(inputRootDir, outputFolder);
         }
     }
